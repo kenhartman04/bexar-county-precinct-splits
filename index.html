@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bexar County Precinct Splits</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #0d0d0d; color: #ddd; }
+    #map { height: 100vh; width: 100%; }
+    .header {
+      position: absolute; top: 12px; left: 12px; z-index: 1000;
+      background: rgba(15,15,15,0.92); padding: 14px 18px; border-radius: 6px;
+      max-width: 360px; border: 1px solid #2a2a2a;
+    }
+    .header h1 { font-size: 16px; margin: 0 0 6px 0; font-weight: 600; }
+    .header p { font-size: 12px; margin: 0; color: #aaa; line-height: 1.4; }
+    .legend {
+      background: rgba(15,15,15,0.92); padding: 12px 14px; border-radius: 6px;
+      border: 1px solid #2a2a2a; font-size: 12px; line-height: 1.6;
+    }
+    .legend h4 { margin: 0 0 6px 0; font-size: 12px; font-weight: 600; color: #ddd; }
+    .legend .swatch { display: inline-block; width: 14px; height: 14px;
+                       margin-right: 6px; vertical-align: middle; border: 1px solid #444; }
+    .leaflet-popup-content-wrapper {
+      background: #1a1a1a; color: #ddd; border-radius: 4px;
+    }
+    .leaflet-popup-tip { background: #1a1a1a; }
+    .leaflet-popup-content { font-size: 12px; line-height: 1.5; }
+    .leaflet-popup-content b { color: #fff; }
+    .leaflet-control-layers {
+      background: rgba(15,15,15,0.92) !important; color: #ddd !important;
+      border: 1px solid #2a2a2a !important;
+    }
+    .leaflet-control-layers-expanded { padding: 10px 12px !important; }
+    .leaflet-control-attribution {
+      background: rgba(15,15,15,0.8) !important; color: #888 !important;
+    }
+    .leaflet-control-attribution a { color: #aaa !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Bexar County Precinct Fragmentation</h1>
+    <p>How precincts are split across congressional, state senate, state house, and SBOE district lines. Toggle district overlays in the layer control.</p>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // ---- Map ----
+    const map = L.map('map', { zoomControl: true }).setView([29.42, -98.49], 10);
+
+    // CartoDB Dark Matter basemap — clean dark, no API key needed
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap, © CARTO',
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(map);
+
+    // ---- Color ramp for split_count ----
+    function splitColor(n) {
+      return n === 0 ? '#1a1a1a' :
+             n === 1 ? '#7a3838' :
+             n === 2 ? '#c25a3a' :
+             n === 3 ? '#e8a838' :
+             n >= 4  ? '#f7e96c' : '#444';
+    }
+
+    function precinctStyle(feature) {
+      const n = feature.properties.split_count || 0;
+      return {
+        fillColor: splitColor(n),
+        weight: 0.5,
+        color: '#333',
+        fillOpacity: n === 0 ? 0.25 : 0.75
+      };
+    }
+
+    function precinctPopup(feature) {
+      const p = feature.properties;
+      return `
+        <b>Precinct ${p.precinct}</b><br>
+        Split layers: <b>${p.split_count}</b><br>
+        — Congress: ${p.n_cong}<br>
+        — Senate: ${p.n_sen}<br>
+        — House: ${p.n_house}<br>
+        — SBOE: ${p.n_sboe}<br>
+        <hr style="border-color:#333; margin:6px 0;">
+        Dem share of registered: ${(p.dem_of_reg * 100).toFixed(1)}%<br>
+        Turnout: ${(p.turnout * 100).toFixed(1)}%<br>
+        Registered voters: ${p.registered.toLocaleString()}
+      `;
+    }
+
+    // ---- District overlay styles ----
+    const districtStyles = {
+      congress: { color: '#ff6b6b', weight: 2.5, fill: false, dashArray: null },
+      senate:   { color: '#4ecdc4', weight: 2,   fill: false, dashArray: '6,4' },
+      house:    { color: '#ffe66d', weight: 1.5, fill: false, dashArray: '3,3' },
+      sboe:     { color: '#a78bfa', weight: 2,   fill: false, dashArray: '10,5' }
+    };
+
+    // ---- Load layers ----
+    const layers = {};
+
+    fetch('data/precincts.geojson')
+      .then(r => r.json())
+      .then(data => {
+        layers.precincts = L.geoJSON(data, {
+          style: precinctStyle,
+          onEachFeature: (f, l) => l.bindPopup(precinctPopup(f))
+        }).addTo(map);
+
+        // Fit map to precincts
+        map.fitBounds(layers.precincts.getBounds(), { padding: [20, 20] });
+      });
+
+    // District overlays — loaded but not added by default
+    const districtFiles = {
+      'Congressional': { url: 'data/congress.geojson', style: districtStyles.congress },
+      'State Senate':  { url: 'data/senate.geojson',   style: districtStyles.senate },
+      'State House':   { url: 'data/house.geojson',    style: districtStyles.house },
+      'SBOE':          { url: 'data/sboe.geojson',     style: districtStyles.sboe }
+    };
+
+    const overlayPromises = Object.entries(districtFiles).map(([name, cfg]) =>
+      fetch(cfg.url).then(r => r.json()).then(data => {
+        const layer = L.geoJSON(data, {
+          style: cfg.style,
+          onEachFeature: (f, l) => {
+            // Adjust property names to match your district shapefile
+            const distId = f.properties.DISTRICT || f.properties.District ||
+                          f.properties.district || 'unknown';
+            l.bindPopup(`<b>${name} District ${distId}</b>`);
+          }
+        });
+        return [name, layer];
+      })
+    );
+
+    Promise.all(overlayPromises).then(results => {
+      const overlays = Object.fromEntries(results);
+
+      // Add layer toggle control
+      L.control.layers(null, overlays, {
+        collapsed: false,
+        position: 'topright'
+      }).addTo(map);
+    });
+
+    // ---- Legend ----
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <h4>Precinct split count</h4>
+        <span class="swatch" style="background:#1a1a1a"></span>0 (unsplit)<br>
+        <span class="swatch" style="background:#7a3838"></span>1 layer<br>
+        <span class="swatch" style="background:#c25a3a"></span>2 layers<br>
+        <span class="swatch" style="background:#e8a838"></span>3 layers<br>
+        <span class="swatch" style="background:#f7e96c"></span>4 layers
+      `;
+      return div;
+    };
+    legend.addTo(map);
+  </script>
+</body>
+</html>
