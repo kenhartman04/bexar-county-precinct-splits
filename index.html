@@ -9,10 +9,17 @@
     html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #0d0d0d; color: #ddd; }
     #map { height: 100vh; width: 100%; }
     .header {
-      position: absolute; top: 12px; left: 12px; z-index: 1000;
-      background: rgba(15,15,15,0.92); padding: 14px 18px; border-radius: 6px;
-      max-width: 360px; border: 1px solid #2a2a2a;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15,15,15,0.92);
+      padding: 14px 18px;
+      border-radius: 6px;
+      max-width: 360px;
+      border: 1px solid #2a2a2a;
     }
+
     .header h1 { font-size: 16px; margin: 0 0 6px 0; font-weight: 600; }
     .header p { font-size: 12px; margin: 0; color: #aaa; line-height: 1.4; }
     .legend {
@@ -52,7 +59,7 @@
     const map = L.map('map', { zoomControl: true }).setView([29.42, -98.49], 10);
 
     // CartoDB Dark Matter basemap — clean dark, no API key needed
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap, © CARTO',
       maxZoom: 19,
       subdomains: 'abcd'
