@@ -181,8 +181,8 @@
       const n = feature.properties.split_count || 0;
       return {
         fillColor: splitColor(n),
-        weight: 0.5,
-        color: '#333',
+        weight: n === 0 ? 1.2 : 0.5,        // Thicker border for unsplit
+        color: n === 0 ? '#555' : '#333',   // Lighter color for unsplit borders
         fillOpacity: n === 0 ? 0.25 : 0.75
       };
     }
