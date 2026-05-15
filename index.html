@@ -82,10 +82,10 @@
       return `
         <b>Precinct ${p.precinct}</b><br>
         Split layers: <b>${p.split_count}</b><br>
-        — Congress: ${p.n_cong}<br>
-        — Senate: ${p.n_sen}<br>
-        — House: ${p.n_house}<br>
-        — SBOE: ${p.n_sboe}<br>
+        — Congress: ${p.n_districts_congress}<br>
+        — Senate: ${p.n_districts_senate}<br>
+        — House: ${p.n_districts_house}<br>
+        — SBOE: ${p.n_districts_sboe}<br>
         <hr style="border-color:#333; margin:6px 0;">
         Dem share of registered: ${(p.dem_of_reg * 100).toFixed(1)}%<br>
         Turnout: ${(p.turnout * 100).toFixed(1)}%<br>
