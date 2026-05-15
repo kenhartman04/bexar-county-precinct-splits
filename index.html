@@ -87,9 +87,6 @@
       — House: ${p.n_districts_house !== undefined ? p.n_districts_house : 'N/A'}<br>
       — SBOE: ${p.n_districts_sboe !== undefined ? p.n_districts_sboe : 'N/A'}<br>
       <hr style="border-color:#333; margin:6px 0;">
-      Dem share of registered: ${(p.dem_of_reg !== undefined && !isNaN(p.dem_of_reg)) ? (p.dem_of_reg * 100).toFixed(1) : 'N/A'}%<br>
-      Turnout: ${(p.turnout !== undefined && !isNaN(p.turnout)) ? (p.turnout * 100).toFixed(1) : 'N/A'}%<br>
-      Registered voters: ${p.registered !== undefined ? p.registered.toLocaleString() : 'Not available'}
     `;
   }
 
