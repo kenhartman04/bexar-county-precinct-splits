@@ -89,7 +89,7 @@
         <hr style="border-color:#333; margin:6px 0;">
         Dem share of registered: ${(p.dem_of_reg * 100).toFixed(1)}%<br>
         Turnout: ${(p.turnout * 100).toFixed(1)}%<br>
-        Registered voters: ${p.registered.toLocaleString()}
+        Registered voters: ${p.registered !== undefined ? p.registered.toLocaleString() : 'Not available'}
       `;
     }
 
