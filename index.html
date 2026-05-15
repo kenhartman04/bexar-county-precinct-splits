@@ -53,6 +53,49 @@
   </div>
   <div id="map"></div>
 
+  <!-- Methodology Popup Content -->
+  <div id="methodology-popup">
+      <h2>Methodology</h2>
+      <p><strong>Data Collection and Preprocessing:</strong></p>
+      <ul>
+          <li>Collecting GeoJSON data for precincts and district plans at various levels of government in Bexar County, Texas.</li>
+          <li>Reading shapefiles using geopandas and converting them to a common CRS (EPSG:2278).</li>
+      </ul>
+
+      <p><strong>Intersecting Precincts with District Plans:</strong></p>
+      <ul>
+          <li>Performing spatial intersections between precincts and district plans using geopandas' overlay function.</li>
+          <li>Calculating the area of intersection and fractional overlap for each intersection fragment.</li>
+      </ul>
+
+      <p><strong>Filtering Sliver Fragments:</strong></p>
+      <ul>
+          <li>Identifying and filtering out sliver fragments based on a specified threshold (sliver_fraction = 0.01).</li>
+          <li>Filtering out fragments where the fractional overlap is less than or equal to the threshold.</li>
+      </ul>
+
+      <p><strong>Counting Districts Per Precinct:</strong></p>
+      <ul>
+          <li>Counting the number of districts per precinct after filtering using pandas.</li>
+      </ul>
+
+      <p><strong>Building Comparison Frame:</strong></p>
+      <ul>
+          <li>Building a comparison frame to visually assess the impact of the sliver filter on district fragmentation across different levels of government.</li>
+      </ul>
+
+      <p><strong>Plotting Diagnostics:</strong></p>
+      <ul>
+          <li>Generating diagnostic plots to validate results and identify the optimal threshold for filtering sliver fragments.</li>
+          <li>Including a vertical red dashed line at the sliver_fraction threshold in the histogram.</li>
+      </ul>
+
+      <p><strong>Combining Results:</strong></p>
+      <ul>
+          <li>Combining all results from different levels of government into a single DataFrame for comprehensive analysis.</li>
+          <li>Saving output GeoDataFrames in GeoJSON format.</li>
+      </ul>
+  </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // ---- Map ----
@@ -153,6 +196,16 @@
       }).addTo(map);
     });
 
+      // Create a popup instance with the methodology content
+    var methodologyPopup = L.popup()
+        .setContent(document.getElementById('methodology-popup').innerHTML)
+        .setLatLng([29.4267, -98.4357]);
+
+    // Add a marker to the map to trigger the popup
+    var methodologyMarker = L.marker([29.4267, -98.4357]).addTo(map);
+
+    // Bind the popup to the marker
+    methodologyMarker.bindPopup(methodologyPopup).openPopup();
     // ---- Legend ----
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {
@@ -167,6 +220,7 @@
       return div;
     };
     legend.addTo(map);
+
   </script>
 </body>
 </html>
