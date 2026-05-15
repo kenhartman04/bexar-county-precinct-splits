@@ -58,7 +58,7 @@
       <h2>Methodology</h2>
       <p><strong>Data Collection and Preprocessing:</strong></p>
       <ul>
-          <li>Collecting GeoJSON data for precincts and district plans at various levels of government in Bexar County, Texas.</li>
+          <li>Collecting data for precincts and district plans at various levels of government in Bexar County, Texas.</li>
           <li>Reading shapefiles using geopandas and converting them to a common CRS (EPSG:2278).</li>
       </ul>
 
@@ -196,16 +196,30 @@
       }).addTo(map);
     });
 
-      // Create a popup instance with the methodology content
+   // Create a popup instance with the methodology content
     var methodologyPopup = L.popup()
         .setContent(document.getElementById('methodology-popup').innerHTML)
         .setLatLng([29.4267, -98.4357]);
 
-    // Add a marker to the map to trigger the popup
-    var methodologyMarker = L.marker([29.4267, -98.4357]).addTo(map);
+    // Add a custom control to display the "Open Methodology" button
+    const controlDiv = L.DomUtil.create('div', 'legend');
+    controlDiv.innerHTML = `
+        <button id="methodology-button">Methodology</button>
+    `;
+    controlDiv.style.position = 'absolute';
+    controlDiv.style.bottom = '10px';
+    controlDiv.style.left = '10px';
 
-    // Bind the popup to the marker
-    methodologyMarker.bindPopup(methodologyPopup).openPopup();
+    const legendControl = L.control({ position: 'bottomleft' });
+    legendControl.onAdd = function() {
+        return controlDiv;
+    };
+    legendControl.addTo(map);
+
+    // Bind the popup to the "Open Methodology" button
+    document.getElementById('methodology-button').addEventListener('click', () => {
+        methodologyPopup.openOn(map);
+    });
     // ---- Legend ----
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {
