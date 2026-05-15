@@ -96,6 +96,12 @@
           <li>Saving output GeoDataFrames in GeoJSON format.</li>
       </ul>
   </div>
+  
+  <!-- Custom Control Button -->
+  <div class="custom-control">
+      <button id="methodology-button">Methodology</button>
+  </div>
+  
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // ---- Map ----
@@ -196,31 +202,13 @@
       }).addTo(map);
     });
 
-     // Create a popup instance with the methodology content
-    var methodologyPopup = L.popup()
-        .setContent(document.getElementById('methodology-popup').innerHTML)
-        .setLatLng([29.4267, -98.4357]);
+    // Get the methodology section element
+    var methodologySection = document.getElementById('methodology-section');
 
-    // Add a custom control to display the "Open Methodology" button
-    const controlDiv = L.DomUtil.create('div', 'custom-control');
-    controlDiv.innerHTML = `
-        <button id="methodology-button">Methodology</button>
-    `;
-    controlDiv.style.position = 'absolute';
-    controlDiv.style.bottom = '10px';
-    controlDiv.style.left = '10px';
-
-    const customControl = L.control({ position: 'bottomleft' });
-    customControl.onAdd = function() {
-        return controlDiv;
-    };
-    customControl.addTo(map);
-
-    // Bind the popup to the "Open Methodology" button
-    document.getElementById('methodology-button').addEventListener('click', () => {
-        methodologyPopup.openOn(map);
+    // Add a click event listener to the custom control button
+    document.getElementById('methodology-button').addEventListener('click', function() {
+        methodologySection.style.display = methodologySection.style.display === 'block' ? 'none' : 'block';
     });
-    
     // ---- Legend ----
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function() {
