@@ -77,21 +77,22 @@
       };
     }
 
-    function precinctPopup(feature) {
-      const p = feature.properties;
-      return `
-        <b>Precinct ${p.precinct}</b><br>
-        Split layers: <b>${p.split_count}</b><br>
-        — Congress: ${p.n_districts_congress}<br>
-        — Senate: ${p.n_districts_senate}<br>
-        — House: ${p.n_districts_house}<br>
-        — SBOE: ${p.n_districts_sboe}<br>
-        <hr style="border-color:#333; margin:6px 0;">
-        Dem share of registered: ${(p.dem_of_reg * 100).toFixed(1)}%<br>
-        Turnout: ${(p.turnout * 100).toFixed(1)}%<br>
-        Registered voters: ${p.registered !== undefined ? p.registered.toLocaleString() : 'Not available'}
-      `;
-    }
+  function precinctPopup(feature) {
+    const p = feature.properties;
+    return `
+      <b>Precinct ${p.precinct}</b><br>
+      Split layers: <b>${p.split_count !== undefined ? p.split_count : 'N/A'}</b><br>
+      — Congress: ${p.n_districts_congress !== undefined ? p.n_districts_congress : 'N/A'}<br>
+      — Senate: ${p.n_districts_senate !== undefined ? p.n_districts_senate : 'N/A'}<br>
+      — House: ${p.n_districts_house !== undefined ? p.n_districts_house : 'N/A'}<br>
+      — SBOE: ${p.n_districts_sboe !== undefined ? p.n_districts_sboe : 'N/A'}<br>
+      <hr style="border-color:#333; margin:6px 0;">
+      Dem share of registered: ${(p.dem_of_reg !== undefined && !isNaN(p.dem_of_reg)) ? (p.dem_of_reg * 100).toFixed(1) : 'N/A'}%<br>
+      Turnout: ${(p.turnout !== undefined && !isNaN(p.turnout)) ? (p.turnout * 100).toFixed(1) : 'N/A'}%<br>
+      Registered voters: ${p.registered !== undefined ? p.registered.toLocaleString() : 'Not available'}
+    `;
+  }
+
 
     // ---- District overlay styles ----
     const districtStyles = {
