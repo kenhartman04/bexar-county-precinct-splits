@@ -18,6 +18,7 @@
       border-radius: 6px;
       max-width: 360px;
       border: 1px solid #2a2a2a;
+      z-index: 1000;
     }
 
     .header h1 { font-size: 16px; margin: 0 0 6px 0; font-weight: 600; }
@@ -70,8 +71,7 @@
       return n === 0 ? '#1a1a1a' :
              n === 1 ? '#7a3838' :
              n === 2 ? '#c25a3a' :
-             n === 3 ? '#e8a838' :
-             n >= 4  ? '#f7e96c' : '#444';
+             n === 3 ? '#e8a838' : '#f7f7f7';
     }
 
     function precinctStyle(feature) {
@@ -79,7 +79,7 @@
       return {
         fillColor: splitColor(n),
         weight: 0.5,
-        color: '#333',
+        color: '#f7f7f7',
         fillOpacity: n === 0 ? 0.25 : 0.75
       };
     }
